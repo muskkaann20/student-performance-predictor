@@ -10,6 +10,11 @@ st.set_page_config(
 
 st.title("🎓 Student Performance Predictor")
 st.write("Predict a student's final grade (G3) using Machine Learning")
+st.info(
+    "This app uses Machine Learning to estimate a student's final grade (G3) "
+    "based on academic and background factors."
+)
+
 
 # ---------------- TRAIN MODEL INSIDE APP ----------------
 @st.cache_resource
