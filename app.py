@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
@@ -8,19 +10,19 @@ st.set_page_config(
     layout="centered"
 )
 
+# ---------------- TITLE & INTRO ----------------
 st.title("🎓 Student Performance Predictor")
 st.write("Predict a student's final grade (G3) using Machine Learning")
+
 st.info(
-    "This app uses Machine Learning to estimate a student's final grade (G3) "
-    "based on academic and background factors."
+    "This app uses a Random Forest Regression model trained on historical student "
+    "performance data to estimate the final grade (G3)."
 )
 
-
-# ---------------- TRAIN MODEL INSIDE APP ----------------
+# ---------------- LOAD DATA & TRAIN MODEL ----------------
 @st.cache_resource
 def train_model():
-    # FIX: Added sep=";" because the file uses semicolons
-    df = pd.read_csv("student-mat.csv", sep=";")
+    df = pd.read_csv("student-mat.csv")
 
     features = [
         "age", "Medu", "Fedu", "studytime",
@@ -36,12 +38,46 @@ def train_model():
     )
     model.fit(X, y)
 
-    return model, features
+    # Model evaluation
+    y_pred = model.predict(X)
+    r2 = r2_score(y, y_pred)
+    mae = mean_absolute_error(y, y_pred)
+    rmse = np.sqrt(mean_squared_error(y, y_pred))
 
-model, features = train_model()
+    return model, features, X, y, y_pred, r2, mae, rmse
+
+model, features, X, y, y_pred, r2, mae, rmse = train_model()
+
+# ---------------- MODEL PERFORMANCE ----------------
+st.subheader("📊 Model Performance")
+
+col1, col2, col3 = st.columns(3)
+col1.metric("R² Score", f"{r2:.3f}")
+col2.metric("MAE", f"{mae:.2f}")
+col3.metric("RMSE", f"{rmse:.2f}")
+
+# ---------------- ACTUAL VS PREDICTED ----------------
+st.subheader("📈 Actual vs Predicted Final Grades")
+
+eval_df = pd.DataFrame({
+    "Actual G3": y,
+    "Predicted G3": y_pred
+})
+
+st.scatter_chart(eval_df)
+
+# ---------------- FEATURE IMPORTANCE ----------------
+st.subheader("📌 Feature Importance")
+
+importance_df = pd.DataFrame({
+    "Feature": features,
+    "Importance": model.feature_importances_
+}).sort_values(by="Importance", ascending=False)
+
+st.bar_chart(importance_df.set_index("Feature"))
 
 # ---------------- USER INPUT ----------------
-st.header("Enter Student Details")
+st.subheader("🧑‍🎓 Enter Student Details")
 
 age = st.slider("Age", 15, 22, 17)
 Medu = st.slider("Mother's Education (0–4)", 0, 4, 2)
@@ -58,10 +94,8 @@ input_df = pd.DataFrame([[
 ]], columns=features)
 
 # ---------------- PREDICTION ----------------
-if st.button("Predict Final Grade"):
+if st.button("🎯 Predict Final Grade"):
     prediction = model.predict(input_df)[0]
-    st.success(f"🎯 Predicted Final Grade (G3): {prediction:.2f}")
-    st.info(
-        "ℹ️ This prediction is generated using a Random Forest Regression model "
-        "trained on historical student performance data."
-    )
+    prediction = max(0, min(20, round(prediction, 2)))
+
+    st.success(f"Predicted Final Grade (G3): **{prediction} / 20**")
