@@ -56,6 +56,10 @@ The Streamlit app provides:
 * Instant prediction on button click
 * Informational message explaining the ML usage
 
+🚀 **Live Demo**
+
+👉 Streamlit App:
+https://student-performance-predictor-f8jbrkrtcjq2waykkshq9n.streamlit.app
 ---
 
 ## 📂 Project Structure
