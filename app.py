@@ -56,3 +56,7 @@ input_df = pd.DataFrame([[
 if st.button("Predict Final Grade"):
     prediction = model.predict(input_df)[0]
     st.success(f"🎯 Predicted Final Grade (G3): {prediction:.2f}")
+    st.info(
+        "ℹ️ This prediction is generated using a Random Forest Regression model "
+        "trained on historical student performance data."
+    )
