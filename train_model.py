@@ -3,7 +3,11 @@ from sklearn.ensemble import RandomForestRegressor
 import joblib
 
 # Load data
-df = pd.read_csv("student-mat.csv")
+# ---------------------------------------------------------
+# FIX: Added sep=";" here. Without this, the script will crash 
+# with a KeyError because it can't find the columns.
+# ---------------------------------------------------------
+df = pd.read_csv("student-mat.csv", sep=";")
 
 # Features used by the app
 features = [
