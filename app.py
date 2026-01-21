@@ -14,7 +14,8 @@ st.write("Predict a student's final grade (G3) using Machine Learning")
 # ---------------- TRAIN MODEL INSIDE APP ----------------
 @st.cache_resource
 def train_model():
-    df = pd.read_csv("student-mat.csv")
+    # FIX: Added sep=";" because the file uses semicolons
+    df = pd.read_csv("student-mat.csv", sep=";")
 
     features = [
         "age", "Medu", "Fedu", "studytime",
