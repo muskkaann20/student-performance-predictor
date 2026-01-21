@@ -136,7 +136,7 @@ streamlit run app.py
 
 ## 👩‍💻 Author
 
-**Muskaan Manwani**
+**Muskaan Manwanii**
 B.Tech Student | Machine Learning Enthusiast
 
 ---
